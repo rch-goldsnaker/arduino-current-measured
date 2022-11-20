@@ -10,10 +10,11 @@ float offset=-0.50; // Equivale a la amplitud del ruido
 //potenciometro
 float Idis;
 int count;
+int count2=0;
 int RelayPin1 = 10;
 int RelayPin2 = 11;
 int RelayPin3 = 12;
-int RelayPin4 = 13;
+int RelayPin4 = 13; //para parlante
 
 void setup() {
   // Inicializar el LCD con el número de  columnas y filas del LCD
@@ -53,19 +54,20 @@ void loop() {
   Idis = analogRead(A3) * (10.0 / 1023.0);
 
   if (Irms<Idis){
-    digitalWrite(RelayPin1,HIGH);
     digitalWrite(RelayPin2,HIGH);
     digitalWrite(RelayPin3,HIGH);
-    digitalWrite(RelayPin4,HIGH);
-    delay(1000);
+    digitalWrite(RelayPin4,LOW);
+    count2=0;
   }else{
     Serial.print("Normal");
-    digitalWrite(RelayPin1,LOW);
+    
     digitalWrite(RelayPin2,LOW);
     digitalWrite(RelayPin3,LOW);
-    digitalWrite(RelayPin4,LOW);
-    Serial.print("disparo por sobrecorriente");
+    digitalWrite(RelayPin4,HIGH);
+    pulso();
     count= count + 1;
+    count2=count2 + 1;
+    Serial.print("disparo por sobrecorriente");
     delay(1000);
   }
 
@@ -111,4 +113,13 @@ float get_corriente()
     if(corriente<Imin)Imin=corriente;
   }
   return(((Imax-Imin)/2)-offset);
+}
+
+float pulso(){
+    if (count2==0){
+      digitalWrite(RelayPin1,LOW);
+      delay(5000);
+      digitalWrite(RelayPin1,HIGH);
+      count2=count2 + 1;
+    }
 }
